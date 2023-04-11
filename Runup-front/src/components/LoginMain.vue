@@ -24,22 +24,26 @@ export default {
       });
     },
     getKakaoAccount(){
+      let tmp = this;
       window.Kakao.API.request({
         url:'/v2/user/me',
         success:res=>{
           const kakao_account=res.kakao_account;
-          const nickname=res.properties.nickname;
-          const email=kakao_account.email;
-          console.log("nickname",nickname);
-          console.log('email',email);
-          axios.get(this._baseUrl + "login", {
+          const userNickname=res.properties.nickname;
+          const userId=kakao_account.email;
+          axios.get(this._baseUrl + "login/kakao", {
               params : {
-                nickname : nickname,
-                email : email
+                userNickname : userNickname,
+                userId : userId
               }
             })
               .then(result=> {
                 console.log(result.data);
+                if (result.data.userNickname == null) {
+                  console.log("회원가입페이지로 보내기")
+                } else {
+                  console.log("회원가입 성공")
+                }
               })
               .catch(function (e) {
                 console.log(e);
