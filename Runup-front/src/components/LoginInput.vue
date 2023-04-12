@@ -20,7 +20,7 @@
 	methods: {
 		login() {
 			let tmp = this;
-			axios.get(tmp._baseUrl + "login" , {
+			axios.get(tmp._baseUrl + "user/login" , {
 				params : {
 					userId : tmp.userId,
 					userPw : tmp.userPw

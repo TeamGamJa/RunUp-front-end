@@ -13,7 +13,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'LoginMain',
+  name: 'LoginKakao',
   methods:{
     kakaoLogin(){
       
@@ -31,7 +31,7 @@ export default {
           const kakao_account=res.kakao_account;
           const userNickname=res.properties.nickname;
           const userId=kakao_account.email;
-          axios.get(this._baseUrl + "login/kakao", {
+          axios.get(this._baseUrl + "user/kakao", {
               params : {
                 userNickname : userNickname,
                 userId : userId
@@ -42,7 +42,7 @@ export default {
                 if (result.data.userNickname == null) {
                   console.log("회원가입페이지로 보내기")
                 } else {
-                  console.log("회원가입 성공")
+                  console.log("로그인성공")
                 }
               })
               .catch(function (e) {

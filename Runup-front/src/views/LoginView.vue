@@ -6,13 +6,13 @@
 </template>
 
 <script>
-import LoginMain from '@/components/LoginMain.vue'
+import LoginKakao from '@/components/LoginKakao.vue'
 import LoginInput from '../components/LoginInput.vue';
 
 export default {
   name: 'LoginView',
   components: {
-    LoginMain,
+    LoginKakao,
     LoginInput
   }
 }
