@@ -1,7 +1,7 @@
 <template>
   <div class="home">
       <LoginInput></LoginInput>
-      <LoginMain></LoginMain>
+      <LoginKakao></LoginKakao>
   </div>
 </template>
 
