@@ -9,6 +9,8 @@ import Vuex from 'vuex'
 const app = createApp(App); 
 
 app.config.globalProperties.$axios = axios;
+app.config.globalProperties.baseUrl = "http://localhost:8080/runup/";
+window.Kakao.init("06f7105ea41620c32847d4b04c882f9b")
 app.use(Vuex);
 app.use(store);
 app.use(globalmethod);

@@ -19,6 +19,12 @@
                             <router-link to="/signup"><button class="signupBtn">회원가입</button></router-link>
                         </div>
                     </div>
+                    <div class="kakaologin">
+                        <a class="kakaoa" @click="kakaoLogin()">
+                        <img class="kakaoimg" src="../../assets/kakao_login_medium_narrow.png" style="max-width: 30%; height: auto;">
+                        </a>
+                        <button class="loginpage-loginBtn" @click="findPw()">비밀번호 찾기</button>
+                    </div>
                 </div>
             </div> 
         </div>
@@ -70,7 +76,66 @@ export default {
             console.log("오류발생")
             console.log(error);
         })
+    },
+    kakaoLogin(){
+      
+      console.log(window.Kakao)
+      window.Kakao.Auth.login({
+          scope:'profile_nickname,account_email',
+          success:this.getKakaoAccount,
+      });
+    },
+    getKakaoAccount(){
+      window.Kakao.API.request({
+        url:'/v2/user/me',
+        success:res=>{
+          const kakao_account=res.kakao_account;
+          const userNickname=res.properties.nickname;
+          const userId=kakao_account.email;
+          console.log(userId)
+          this.$axios.get(this.baseUrl + "user/kakao", {
+              params : {
+                userNickname : userNickname,
+                userId : userId
+              }
+            })
+              .then(result=> {
+                console.log(result.data);
+                if (result.data.userNickname == null) {
+                  console.log("회원가입페이지로 보내기")
+                } else {
+                  console.log("로그인성공")
+                }
+              })
+              .catch(function (e) {
+                console.log(e);
+              });
+          
+        },
+        fail : error=>{
+          console.log(error);
+        }
+      })
+    },
+    findPw() {
+        this.$axios.get(this.baseUrl + "user/password", {
+              params : {
+                userId : this.userId,
+                userPw : this.userPw
+              }
+            })
+              .then(result=> {
+                console.log(result.data);
+              })
+              .catch(function (e) {
+                console.log(e);
+              });
+          
+        },
+        fail : error=>{
+          console.log(error);
     }
+
   }
  
 }
