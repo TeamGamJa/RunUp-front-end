@@ -15,7 +15,18 @@
 
 <script>
 export default {
-  name: 'TatalSearch'    
+  name: 'TatalSearch' ,
+  data() {
+    return {
+        
+    }
+  },
+  created(){
+
+  },
+  methods:{
+
+  }   
 }
 </script>
 

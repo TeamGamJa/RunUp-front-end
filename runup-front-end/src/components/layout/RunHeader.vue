@@ -19,8 +19,20 @@
               </div>
           </div>
           <div class="user-bar">
-             <div class="user">
-                 <div class="login">
+              <div class="user-login" v-if="!isAuthenticated">
+                 <div class="login" >
+                     <router-link to="/SignIn"><button class="Mainpage-Signin">로그인</button></router-link>
+                  </div>
+                  <div class="signup">
+                      <router-link to="/SignUp"><button class="Mainpage-Signup">회원가입</button></router-link>
+                  </div>
+                  <div class="search">
+                      <input type="text" class="totalSearchBar">
+                      <button type="button" @click="searchList()" class="totalBtn">검색</button>
+                  </div>
+              </div>
+              <div class="user-logout" v-else>
+                 <div class="logout">
                      <router-link to="/SignIn"><button class="Mainpage-Signin">로그인</button></router-link>
                   </div>
                   <div class="signup">
@@ -37,8 +49,31 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
+
 export default {
-name: 'RunHeader'
+name: 'RunHeader',
+components: {},
+computed: {
+  ...mapGetters(["isAuthenticated"]),
+},
+methods:{
+  redirect() {
+    console.log("redirect")
+    console.log("isAuthenticated :" + this.isAuthenticated)
+    if(!this.isAuthenticated) {
+      this.$router.push({
+        name: "HelpTouch",
+      })
+    }
+  },
+  logout() {
+    this.$store
+    .dispatch("logout",{})
+    .then(()=> this.redirect())
+    .catch(({ message }) => alert(message))
+  },
+},
 }
 </script>
 
@@ -81,7 +116,7 @@ name: 'RunHeader'
   display: inline-flex;
   flex-wrap: wrap;
 }
-.user {
+.user-login {
   display: inline-flex;
   flex-wrap: wrap; // 옆으로 공간이 부족할 경우 밑으로 내린다.
   justify-content: flex-end;

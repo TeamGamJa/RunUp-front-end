@@ -2,105 +2,35 @@
     <div class="Running-container">
         <div class="Running-header">
             <div class="Running-category">
-                <select id="BigList">
-                    <option value="0" selected="selected">대분류</option>
-                    <option value="1">IT</option>
-                    <option value="2">LifeStyle</option>
-                    <option value="3">문제풀이</option>
-                    <option value="4">기타</option>
-                </select>
-                ->
-                <select id="middleList">
-                    <option value="0" selected="selected">대분류</option>
-                    <option value="1">IT</option>
-                    <option value="2">LifeStyle</option>
-                    <option value="3">문제풀이</option>
-                    <option value="4">기타</option>
+                <select id="Running-catecory" data-title="카테고리">
+                    <!-- <option v-for="(categorybig, index) in categorybig" :value="index"> {{ data.title }}</option> -->
                 </select>
             </div>
         </div>
         <div class="Running-body">
             <table>
                 <thead>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>Runner</th>
-                    <th>특기</th>
-                    <th>무지개</th>
-                    <th>Runner 횟수</th>
-                    <th>작성일</th>
-                    <th>마감여부</th>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th> 
+                        <th>Runner</th>
+                        <th>특기</th>
+                        <th>무지개</th>
+                        <th>Runner 횟수</th>
+                        <th>작성일</th>
+                        <th>마감여부</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td><router-link to="/detailRunning/1">java란?</router-link></td>
-                        <td>아이유</td>
-                        <td>Java</td>
-                        <td>녹색</td>
-                        <td>5회</td>
-                        <td>2023-01-01</td>
-                        <td>모집중</td>
+                    <tr v-for="(run, idx) in runningList" :key="idx">
+                        <td>{{ run.num }}</td>
+                        <td>{{ run.title }}</td>
+                        <td>{{ run.NickName }}</td>
+                        <td>{{ run.ability }}</td>
+                        <td>{{ run.grade }}</td>
+                        <td>{{ run.count }}</td>
+                        <td>{{ run.candidate}}</td>
+                        <td>{{ run.closer }}</td>
                     </tr>
                     
                 </tbody>
@@ -125,18 +55,43 @@ export default {
   name: 'FoundRunning',
   data() {
     return {
-        category: [
-            {id:1, name:"IT"},
-            {id:2, name:"LifeStyle"},
-            {id:3, name:"문제풀이"},
-            {id:4, name:"기타"}  
-        ],
-        selectedCategory: null
+        categorybig:{},
+        runningList:{},  // 도움닿기 게시글 리스트 데이터 전송
+
     };
   },
+  created(){
+    this.fetchcategorybig(),
+    this.fetchrunningList()
+  },
   methods: {
-    selectCategory(category) {
-        this.selectedCategory = category;
+    fetchcategorybig(){
+        var serverIP ='127.0.0.1',
+            serverPort = 8080,
+            pageUrl ='runup/running/category';
+        this.$axios({
+            url: `http://${serverIP}:${serverPort}/${pageUrl}`,
+            method: "GET",
+        }).then(response => {
+        this.categorybig = response.data // axios를 통해 받은 데이터를 categorybig에 담기
+        }).catch (error=> {
+        console.log(error)
+        })
+
+    },
+    fetchrunningList() {
+        var serverIP ='127.0.0.1',
+            serverPort = 8080,
+            pageUrl ='runup/running/board';
+        this.$axios({
+            url: `http://${serverIP}:${serverPort}/${pageUrl}`,
+            method: "GET",
+        }).then(response => {
+        this.run = response.data // axios를 통해 받은 데이터를 run에 담기
+        }).catch (error=> {
+        console.log(error)
+        })
+
     }
   }
 }

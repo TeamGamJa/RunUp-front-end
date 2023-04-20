@@ -1,5 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router"
 
+import store from "../store"
+
+const beforeAuth = isAuth => (to, from, next) => {
+    const isAuthenticated = store.getters["isAuthenticated"]
+    if((isAuthenticated && isAuth) || (!isAuthenticated && !isAuth)) {
+        return next()
+    } else {
+        next("/")  // 홈 화면으로 이동
+    }
+}
+
+
+
+
 // 도움 닿기 Main Page
 import HelpTouch from '../views/touch/HelpTouch.vue'
 
@@ -32,6 +46,7 @@ const routes = [
         path: "/FoundRunning",
         name: "FoundRunning",
         component: FoundRunning,
+        beforeEnter: beforeAuth(false)
     },
     {
         path: "/SignIn",

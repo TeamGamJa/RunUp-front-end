@@ -2,51 +2,102 @@
     <div class="loginpage-container">
         <div class="loginpage-outer-box">
             <div class="loginpage-middle-box">
-                <div class="loginpage-login-user">
-                  <div class="loginpage-inner-box">
-                      <div class="loginpage-inner-first">
-                          <span class="loginpage-id-name">아이디</span> <input class="loginpage-input" type="text"  v-model="userId">
+                    <FormWrapper class="loginpage-login-user" @submit="onSubmit" ref="formRef">
+                        <div class="loginpage-inner-box">
+                            <FormField name="userId" rules="required|email" v-slot="{ errors }">
+                                <div class="loginpage-inner-first">
+                                    <span class="loginpage-id-name">아이디</span>
+                                    <input class="loginpage-input" :value="state.userId" type="text" id="userId" placeholder="E-mail" @input="state.userId = $event.target.value">
+                                    <span class="loginpage-error-massage">{{ errors[0] }}</span>
+                                </div>
+                            </FormField>
+                            <FormField name="userPw" rules="required|min:8|max:20|alpha_dash" v-slot="{ errors }">
+                                <div class="loginpage-inner-second">
+                                    <span class="loginpage-pw-name">비밀번호</span>
+                                    <input class="loginpage-input" :value="state.userPw" type="password" id="userPw" @input="state.userPw = $event.target.value">
+                                    <span class="loginpage-error-massage">{{ errors[0] }}</span>
+                                </div>
+                            </FormField>
                         </div>
-                        <div class="loginpage-inner-second">
-                            <span class="loginpage-pw-name">비밀번호</span> <input class="loginpage-input" type="password"  v-model="userPw">
+                        <div class="loginpage-button-box">
+                            <div class="loginopage-login-Btn">
+                                <button class="loginpage-loginBtn" type="button" @click="userlogin()">로그인</button>
+                            </div>
+                            <div class="loginpage-signup-Btn">
+                               <router-link to="/signup"><button class="signupBtn">회원가입</button></router-link>
+                            </div>
                         </div>
-                    </div>
-                    <div class="loginpage-button-box">
-                        <div class="loginopage-login-Btn">
-                            <button class="loginpage-loginBtn" @click="userlogin()">로그인</button>
-                        </div>
-                        <div class="loginpage-signup-Btn">
-                            <router-link to="/signup"><button class="signupBtn">회원가입</button></router-link>
-                        </div>
-                    </div>
                     <div class="kakaologin">
                         <a class="kakaoa" @click="kakaoLogin()">
                         <img class="kakaoimg" src="../../assets/kakao_login_medium_narrow.png" style="max-width: 30%; height: auto;">
                         </a>
                         <button class="loginpage-loginBtn" @click="findPw()">비밀번호 찾기</button>
                     </div>
-                </div>
+                    </FormWrapper>
             </div> 
         </div>
     </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { ref } from 'vue';
+import { FormWrapper, useForm, FormField } from 'vee-validate';
+import { reactive } from '@vue/reactivity';
+import { useStore } from 'vuex'; // store 가져오기
+import { useRouter } from 'vue-router'; // router 가져오기
+// import { mapGetters, mapActions } from "vuex";
+import { computed } from 'vue';
 
 export default {
-  name: 'SignIn',
-  data() {
+  name: "SignIn",
+  components: {
+    FormWrapper,
+    FormField
+  },
+  setup() {
+    const state = reactive({  // 반응형으로 아이디 비번 설정
+      userId: "",
+      userPw: "",
+    });
+    
+    const { handleSubmit } = useForm();
+    const formRef = ref(null);
+    const store = useStore(); // store 사용
+    const router = useRouter(); // router 사용
+
+    const onSubmit = handleSubmit(async () => {
+      if (!state.userId) {
+        alert("아이디를 입력해주세요.");
+        return false;
+      }
+      if (!state.userPw) {
+        alert("비밀번호를 입력해주세요.");
+        return false;
+      }
+      try {
+        await store.dispatch("login", {
+          userId: state.userId,
+          userPw: state.userPw,
+        });
+        router.push({ name: "HelpTouch" }); // login action 호출 시 HelpTouch로 이동시킨다.
+        return true;
+      } catch ({ message }) {
+        alert(message);
+        return false;
+      }
+    });
     return {
-        userId:"",
-        userPw:""
+      state,
+      formRef,
+      onSubmit,
+      getVuexId: computed(() => store.getters.getVuexId),
+      getVuexNickName: computed(() => store.getters.getVuexNickName),
+      setVuexId: (value) => store.dispatch("setVuexId", value),
+      setVuexNickName: (value) => store.dispatch("setVuexNickName", value),
     };
   },
-  computed: {
-    ...mapGetters(["getVuexId","getVuexNickName"]),
-  },
+ 
   methods: {
-    ...mapActions(["setVuexId","setVuexNickName"]),
     userlogin() {
         var serverIP ='127.0.0.1',
             serverPort = 8080,
@@ -55,8 +106,8 @@ export default {
             url: `http://${serverIP}:${serverPort}/${pageUrl}`,
             method: "GET",
             params: {
-                userId: this.userId,
-                userPw: this.userPw
+                userId: this.state.userId,
+                userPw: this.state.userPw
             },
             // responseType: 'json',
         }) 
@@ -105,6 +156,9 @@ export default {
                   console.log("회원가입페이지로 보내기")
                 } else {
                   console.log("로그인성공")
+                  this.setVuexId(result.data.userId);
+                  this.setVuexNickName(result.data.userNickName);
+                  this.$moveTo("/")
                 }
               })
               .catch(function (e) {
@@ -140,6 +194,7 @@ export default {
  
 }
 </script>
+
 
 <style>
 .loginpage-container{

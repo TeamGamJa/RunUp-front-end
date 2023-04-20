@@ -1,110 +1,158 @@
 <template>
     <div class="SingupPage-container">
         <div class="SignupPage-outer-box">
-            <div class="SignupPage-middle-box">
-                <div class="SignupPage-inner-box">
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">아이디</span>
+           <ValidationObserver>
+              <form @submit.prevent="formSubmit" method="post">
+                <div class="SignupPage-middle-box">
+                    <div class="SignupPage-inner-box">
+                       <ValiadtionProvider ref="refUserId" rules="required|email">
+                           <div class="SignupPage-box">
+                               <div class="SignupPage-name">
+                                   <span class="SignupPage-Input-name">아이디</span>
+                                </div>
+                                <div class="SignupPage-text">
+                                    <input type="text" id="email" class="SignupPage-Input-Text" v-model="userId">
+                                </div>
+                                <div class="SignupPage-Id-Btn">
+                                    <button type="button" @click="confirmId()" class="ID-Confirm-Btn">중복확인</button>
+                                </div>
+                            </div>
+                        </ValiadtionProvider>
+                        <ValiadtionProvider ref="refPassword" rules="required|min:8|max:20|alpha_dash">
+                            <div class="SignupPage-box">
+                                <div class="SignupPage-name">
+                                    <span class="SignupPage-Input-name">비밀번호</span>
+                                </div>
+                                <div class="SignupPage-text">
+                                    <input type="password" id="password" class="SignupPage-Input-Text" v-model="userPw">
+                                </div>
+                            </div>
+                        </ValiadtionProvider>
+                        <ValiadtionProvider ref="refPasswordChk" rules="v => !(v && v.length >= 30) || '패스워드는 30자 이상 입력할 수 없습니다.'">
+                            <div class="SignupPage-box">
+                                <div class="SignupPage-name">
+                                    <span class="SignupPage-Input-name">비밀번호확인</span>
+                                </div>
+                                <div class="SignupPage-text">
+                                    <input type="password" class="SignupPage-Input-Text" v-model="userPwCheck">
+                                </div>
+                            </div>
+                        </ValiadtionProvider>
+                        <div class="SignupPage-box">
+                            <div class="SignupPage-name">
+                                <span class="SignupPage-Input-name">이름</span>
+                            </div>
+                            <div class="SignupPage-text">
+                                <input type="text" rules="" class="SignupPage-Input-Text" v-model="userName">
+                            </div>
                         </div>
-                        <div class="SignupPage-text">
-                            <input type="text" class="SignupPage-Input-Text" v-model="userId">
+                        <div class="SignupPage-box">
+                            <div class="SignupPage-name">
+                                <span class="SignupPage-Input-name">닉네임</span>
+                            </div>
+                            <div class="SignupPage-text">
+                                <input type="text" class="SignupPage-Input-Text" v-model="userNickname">
+                            </div>
                         </div>
-                        <div class="SignupPage-Id-Btn">
-                            <button type="button" @click="confirmId()" class="ID-Confirm-Btn">중복확인</button>
+                        <div class="SignupPage-box">
+                            <div class="SignupPage-name">
+                                <span class="SignupPage-Input-name">전화번호</span>
+                            </div>
+                            <div class="SignupPage-text">
+                                <input type="text" class="SignupPage-Input-Text" v-model="userphoneNumber">
+                            </div>
+                        </div>
+                        <div class="SignupPage-box">
+                            <div class="SignupPage-name">
+                                <span class="SignupPage-Input-name">주소</span>
+                            </div>
+                            <div class="SignupPage-text">
+                                <input type="text" class="SignupPage-Input-Text" v-model="userAdress">
+                            </div>
+                        </div>
+                        <div class="SignupPage-Ability-box">
+                            <div class="SignupPage-Ability-name">
+                                <span class="SignupPage-Input-name">특기</span>
+                            </div>
+                            <div class="SignupPage-Ability-textbox">
+                                <input type="text" class="SignupPage-Ability-Text" v-model="userAbility">
+                            </div>
+                        </div>
+                        <div class="SignupPage-Ability-box">
+                            <div class="SignupPage-Ability-name">
+                                <span class="SignupPage-Input-name">숙련도</span>
+                            </div>
+                            <div class="SignupPage-skill-radio">
+                                <input type="radio" id="first-skill" name="skill" v-model="userSkill">
+                                <label for="first-skill">중수</label>
+                                <input type="radio" id="second-skill" name="skill" v-model="userSkill">
+                                <label for="second-skill">초보</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">비밀번호</span>
-                        </div>
-                        <div class="SignupPage-text">
-                            <input type="password" class="SignupPage-Input-Text" v-model="userPw">
-                        </div>
-                    </div>
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">비밀번호확인</span>
-                        </div>
-                        <div class="SignupPage-text">
-                            <input type="password" class="SignupPage-Input-Text" v-model="userPwConfirm">
-                        </div>
-                    </div>
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">이름</span>
-                        </div>
-                        <div class="SignupPage-text">
-                            <input type="text" class="SignupPage-Input-Text" v-model="userName">
-                        </div>
-                    </div>
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">닉네임</span>
-                        </div>
-                        <div class="SignupPage-text">
-                            <input type="text" class="SignupPage-Input-Text" v-model="userNickname">
-                        </div>
-                    </div>
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">전화번호</span>
-                        </div>
-                        <div class="SignupPage-text">
-                            <input type="text" class="SignupPage-Input-Text" v-model="userphoneNumber">
-                        </div>
-                    </div>
-                    <div class="SignupPage-box">
-                        <div class="SignupPage-name">
-                            <span class="SignupPage-Input-name">주소</span>
-                        </div>
-                        <div class="SignupPage-text">
-                            <input type="text" class="SignupPage-Input-Text" v-model="userAdress">
-                        </div>
-                    </div>
-                    <div class="SignupPage-Ability-box">
-                        <div class="SignupPage-Ability-name">
-                            <span class="SignupPage-Input-name">특기</span>
-                        </div>
-                        <div class="SignupPage-Ability-textbox">
-                            <input type="text" class="SignupPage-Ability-Text" v-model="userAbility">
-                        </div>
-                    </div>
-                    <div class="SignupPage-Ability-box">
-                        <div class="SignupPage-Ability-name">
-                            <span class="SignupPage-Input-name">숙련도</span>
-                        </div>
-                        <div class="SignupPage-skill-radio">
-                            <input type="radio" id="first-skill" name="skill" v-model="userSkill">
-                            <label for="first-skill">중</label>
-                            <input type="radio" id="second-skill" name="skill" v-model="userSkill">
-                            <label for="second-skill">하</label>
-                        </div>
+                    <div class="SignupPage-Signup-Btn">
+                        <button type="submit" class="SignUp-Btn">회원가입</button>
                     </div>
                 </div>
-                <div class="SignupPage-Signup-Btn">
-                    <button type="button" @click="Signup()" class="SignUp-Btn">회원가입</button>
-                </div>
-            </div>
+              </form>
+            </ValidationObserver>
         </div>
-    </div>
-</template>
+        </div>
+    </template>
 
 <script>
 export default {
   name: 'SignUp',
+  components: {},
   data() {
     return {
         userId:"",
         userPw:"",
-        userPwConfirm:"",
+        userPwCheck:"",
         userName:"",
         userNickname:"",
         userPhoneNumber:"",
         userAdress:"",
         userAbility:"",
-        userSkill:""
-    };
+        userSkill:"",
+    }
+  },
+  computed: {},
+  methods:{
+    async formSubmit() {
+        const refUserId = await this.$refs.refUserId.validate()
+        if(!refUserId.validate) {
+            alert(refUserId.error[0])
+            return false
+        }
+        const refPassword = await this.$refs.refPassword.validate()
+        if(!refPassword.validate) {
+            alert(refPassword.error[0])
+            return false
+        }
+        const refPasswordChk = await this.$refs.refPasswordChk.validate()
+        if(!refPasswordChk.validate) {
+            alert(refPasswordChk.error[0])
+            return false
+        }
+
+        this.$store
+        .dispatch("signup", {
+            userId: this.userId,
+            userPw:this.userPw,
+            userPwCheck:this.userPwCheck,
+        })
+        .then(response => {
+            if(response.status == 200) {
+                this.$router.push({
+                    name: "HelpTouch",
+                })
+            }
+        })
+        .catch(({message}) => alert(message))
+
+        return true
+    }
   }
 }
 </script>
