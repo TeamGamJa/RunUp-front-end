@@ -2,15 +2,27 @@
     <div class="Running-container">
         <div class="Running-header">
             <div class="Running-category">
-                <select id="Running-catecory" data-title="카테고리">
-                    <!-- <option v-for="(categorybig, index) in categorybig" :value="index"> {{ data.title }}</option> -->
+                <select id="Running-Bcategory" aria-label="카테고리" v-model="choice" name="카테고리" @change="fetchcategoryMedium">
+                    <optgroup label="대분류">
+                        <!-- <option v-for=" (Bcategory, index) in categoryBig" :key="index" :value="Bcategory" > {{ Bcategory}}</option> -->
+                        <option>IT</option>
+                        <option>라이프스타일</option>
+                        <option>문제풀이</option>
+                        <option>기타</option>
+                    </optgroup>
                 </select>
+                <select id="Running-Mcategory" @change="inputSelectVal">
+                    <optgroup label="중분류">
+                        <option v-for=" (Mcategory, index) in categorymMedium" :key="index" :value="Mcategory" >{{ Mcategory }}</option>
+                    </optgroup>
+                </select>
+                <button type="submit" name="categorySearchBtn" id="categorySearchBtn" @click.prevent="categorySearch()">검색</button>
             </div>
         </div>
         <div class="Running-body">
-            <table>
-                <thead>
-                    <tr>
+                <table>
+                    <thead>
+                        <tr>
                         <th>번호</th>
                         <th>제목</th> 
                         <th>Runner</th>
@@ -22,17 +34,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(run, idx) in runningList" :key="idx">
-                        <td>{{ run.num }}</td>
-                        <td>{{ run.title }}</td>
-                        <td>{{ run.NickName }}</td>
-                        <td>{{ run.ability }}</td>
-                        <td>{{ run.grade }}</td>
-                        <td>{{ run.count }}</td>
-                        <td>{{ run.candidate}}</td>
-                        <td>{{ run.closer }}</td>
+                    <tr v-for="(run, idx) in runninglistall" :key="idx">
+                        <td>{{ run.RunningNum }}</td>
+                        <td>{{ run.RunningTitle }}</td>
+                        <td>{{ run.userNickname}}</td>
+                        <td>{{ run.userAbility }}</td>
+                        <td>{{ run.userLuxColor }}</td>
+                        <td>{{ run.userMentorCnt }}</td>
+                        <td>{{ run.RunningDate}}</td>
+                        <td>{{ run.RunningAble }}</td>
                     </tr>
-                    
                 </tbody>
             </table>
         </div>
@@ -55,41 +66,116 @@ export default {
   name: 'FoundRunning',
   data() {
     return {
-        categorybig:{},
-        runningList:{},  // 도움닿기 게시글 리스트 데이터 전송
-
-    };
+        RunningBcatogry: '전체',      // select #Running-Bcategory에 현재 선택되어 있는 값
+        RunningMcategory: '전체',     // select #Running-Mcategory에 현재 선택되어 있는 값
+        categoryBig:[''],             // select #Running-Bcategory안에 나열할 option 요소들의 리스트
+        categorymMedium:[''],          // select #Running-Mcategory안에 나열할 option 요소들의 리스트
+        runninglistall:[],  // 도움닿기 게시글 리스트 데이터 전송
+        choice: ''
+    }  
   },
   created(){
-    this.fetchcategorybig(),
-    this.fetchrunningList()
+    // this.fetchrunninglistall()
+    this.fetchcategoryBig()
+    // this.fetchcategoryMedium()
+  },
+  update(){
+    this.fetchrunninglistall()
   },
   methods: {
-    fetchcategorybig(){
+    inputSelectVal(e) {
+        const sel = e.currentTarget;
+        switch (sel.id) {
+            case 'Running-Bcategory':
+                this.RunningBcatogry = sel.value;
+                break;
+            case 'Running-Mcategory':
+                this.RunningMcategory = sel.value;
+                break;
+        }
+     },
+     updateOptionList(type,list) {
+        const arr = ['전체'];
+        switch (type) {
+            case 'Bcategory':
+                this.categoryBig = [arr.concat(list)];
+                break;
+            case 'Mcategory': 
+                this.categorymMedium = [arr.concat(list)];
+                break;    
+        }
+     },
+     updateRunningList(list) {
+        this.runninglistall = list;
+     },
+     categorySearch(){
         var serverIP ='127.0.0.1',
             serverPort = 8080,
-            pageUrl ='runup/running/category';
+            pageUrl ='runup/running/s';
+        this.$axios({
+            url: `http://${serverIP}:${serverPort}/${pageUrl}`,
+            method: "GET",
+            data: {
+                categoryBig : this.categoryBig == '전체' ? '%' : this.categoryBig,
+                categorymMedium : this.categorymMedium == '전체' ? '%' : this.categorymMedium,
+            },
+        }).then((result) => {
+            console.log(result);
+            this.updateRunningList(result.data.list);
+        }).catch (error=> {
+        console.log(error)
+        })
+     },
+    fetchcategoryBig(){
+        console.log('g21')
+        var serverIP ='127.0.0.1',
+            serverPort = 8080,
+            pageUrl ='runup/running/categorybig';
         this.$axios({
             url: `http://${serverIP}:${serverPort}/${pageUrl}`,
             method: "GET",
         }).then(response => {
-        this.categorybig = response.data // axios를 통해 받은 데이터를 categorybig에 담기
+        const categoryBigData = response.data.categoryBig;// axios를 통해 받은 데이터를 categorybig에 담기
+        this.categoryBig = Object.values(categoryBigData);
         }).catch (error=> {
         console.log(error)
         })
 
     },
-    fetchrunningList() {
+    fetchcategoryMedium(){
+    // console.log(this.choice)
+    var serverIP ='127.0.0.1',
+        serverPort = 8080,
+        pageUrl ='runup/running/categorymedium';
+    this.$axios({
+        url: `http://${serverIP}:${serverPort}/${pageUrl}`,
+        method: "GET",
+        params:{
+            categoryBig :this.choice
+        }
+    }).then(response => {
+        // console.log(response)
+        const categoryMediumData = response.data.categoryMedium;
+        this.categorymMedium = ['전체'].concat(Object.values(categoryMediumData));
+    }).catch(error=> {
+        console.log(error)
+    })
+},
+
+    fetchrunninglistall() {
+        console.log("dsafsaf")
         var serverIP ='127.0.0.1',
             serverPort = 8080,
-            pageUrl ='runup/running/board';
+            pageUrl ='runup/running/s';
         this.$axios({
             url: `http://${serverIP}:${serverPort}/${pageUrl}`,
             method: "GET",
         }).then(response => {
-        this.run = response.data // axios를 통해 받은 데이터를 run에 담기
+            console.log(response)
+            this.runninglistall = response.data // axios를 통해 받은 데이터를 run에 담기
+            console.log(this.runninglistall)
         }).catch (error=> {
-        console.log(error)
+            console.log(error)
         })
 
     }
@@ -102,7 +188,7 @@ export default {
     display:flex;
     background-color: white;
     flex-direction: column;
-    height: 570px;
+    height: 630px;
 }
 .Running-header {
     display:inline-flex;

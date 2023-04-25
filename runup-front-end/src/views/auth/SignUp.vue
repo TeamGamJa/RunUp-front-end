@@ -1,11 +1,8 @@
 <template>
     <div class="SingupPage-container">
         <div class="SignupPage-outer-box">
-           <ValidationObserver>
-              <form @submit.prevent="formSubmit" method="post">
                 <div class="SignupPage-middle-box">
                     <div class="SignupPage-inner-box">
-                       <ValiadtionProvider ref="refUserId" rules="required|email">
                            <div class="SignupPage-box">
                                <div class="SignupPage-name">
                                    <span class="SignupPage-Input-name">아이디</span>
@@ -16,9 +13,10 @@
                                 <div class="SignupPage-Id-Btn">
                                     <button type="button" @click="confirmId()" class="ID-Confirm-Btn">중복확인</button>
                                 </div>
+                                <span v-if="count === 2"></span>
+                                <span v-else-if="count === 1 "> 가입된 아이디가 존재합니다</span>
+                                <span v-else-if="count === 0 "> 사용 가능한 아이디입니다</span>
                             </div>
-                        </ValiadtionProvider>
-                        <ValiadtionProvider ref="refPassword" rules="required|min:8|max:20|alpha_dash">
                             <div class="SignupPage-box">
                                 <div class="SignupPage-name">
                                     <span class="SignupPage-Input-name">비밀번호</span>
@@ -27,8 +25,6 @@
                                     <input type="password" id="password" class="SignupPage-Input-Text" v-model="userPw">
                                 </div>
                             </div>
-                        </ValiadtionProvider>
-                        <ValiadtionProvider ref="refPasswordChk" rules="v => !(v && v.length >= 30) || '패스워드는 30자 이상 입력할 수 없습니다.'">
                             <div class="SignupPage-box">
                                 <div class="SignupPage-name">
                                     <span class="SignupPage-Input-name">비밀번호확인</span>
@@ -37,7 +33,6 @@
                                     <input type="password" class="SignupPage-Input-Text" v-model="userPwCheck">
                                 </div>
                             </div>
-                        </ValiadtionProvider>
                         <div class="SignupPage-box">
                             <div class="SignupPage-name">
                                 <span class="SignupPage-Input-name">이름</span>
@@ -94,9 +89,7 @@
                         <button type="submit" class="SignUp-Btn">회원가입</button>
                     </div>
                 </div>
-              </form>
-            </ValidationObserver>
-        </div>
+            </div>
         </div>
     </template>
 
@@ -115,10 +108,30 @@ export default {
         userAdress:"",
         userAbility:"",
         userSkill:"",
+        count : '',
     }
   },
   computed: {},
   methods:{
+    confirmId(){
+        var serverIP='127.0.0.1',
+            serverPort = 8080,
+            pageUrl='runup/user/id'
+        this.$axios({
+            url: `http://${serverIP}:${serverPort}/${pageUrl}`,
+            method: 'GET',
+            params: {
+                userId : this.userId
+            },
+
+        }).then((result)=> {
+            console.log(result)
+            this.count = parseInt(result.data);
+            
+        })
+
+
+    },
     async formSubmit() {
         const refUserId = await this.$refs.refUserId.validate()
         if(!refUserId.validate) {
@@ -165,6 +178,8 @@ export default {
 }
 .SignupPage-outer-box {
     padding: 100px 200px 100px 200px;
+    width: 700px;
+    display:inline-block;
 }
 .SignupPage-middle-box {
     display: inline-block;
@@ -174,6 +189,8 @@ export default {
 }
 .SignupPage-box {
     padding-top: 10px;
+    width: 550px;
+    display:inline-block;
 }
 .SignupPage-Ability-box {
     padding-top: 10px;
@@ -201,7 +218,7 @@ export default {
     background-color:rgba(217, 217, 217, 0.6);
     border: none; 
     border-radius: 73px; 
-    width: 200px;
+    width: 250px;
     height: 25px;
     text-align: center;
 }
@@ -212,6 +229,7 @@ export default {
 }
 .SignupPage-text {
     display:inline-block;
+    width: 300px;
 }
 .SignupPage-Ability-Text {
     padding: 3px 10px 3px 10px;
@@ -233,7 +251,7 @@ export default {
 .SignupPage-skill-radio input[type=radio]+label {
     display: inline-block;
     cursor: pointer;
-    width: 30px;
+    width: 50px;
     height: 25px;
     border: 1px solid rgba(217, 217, 217, 0.6);
     text-align: center;

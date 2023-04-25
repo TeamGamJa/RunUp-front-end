@@ -27,11 +27,11 @@
                                <router-link to="/signup"><button class="signupBtn">회원가입</button></router-link>
                             </div>
                         </div>
+                        <button class="loginpage-findPwBtn" @click="findPw()">비밀번호 찾기</button>
                     <div class="kakaologin">
                         <a class="kakaoa" @click="kakaoLogin()">
                         <img class="kakaoimg" src="../../assets/kakao_login_medium_narrow.png" style="max-width: 30%; height: auto;">
                         </a>
-                        <button class="loginpage-loginBtn" @click="findPw()">비밀번호 찾기</button>
                     </div>
                     </FormWrapper>
             </div> 
@@ -285,4 +285,16 @@ export default {
     border: none;
     background-color: rgba(244, 209, 155, 1);
 }
+.loginpage-findPwBtn {
+    justify-content: flex-end;
+    width: 70px;
+    height: 20px;
+    border-radius: 5.6px;
+    border: none;
+    background-color: rgba(244, 209, 155, 1);
+}
+.kakaologin {
+
+}
+
 </style>
